@@ -1,34 +1,34 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Intake.IntakePosition;
+import frc.robot.subsystems.IntakeArm;
+import frc.robot.subsystems.IntakeArm.IntakeArmPosition;
 
 public class ArmAutoCommand extends CommandBase {
-    private final Intake intake;
-    private final IntakePosition position;
+    private final IntakeArm intakeArm;
+    private final IntakeArmPosition position;
     
-    public ArmAutoCommand(final Intake intake, final IntakePosition position) {
-        this.intake = intake;
+    public ArmAutoCommand(final IntakeArm intakeArm, final IntakeArmPosition position) {
+        this.intakeArm = intakeArm;
         this.position = position;
 
-        addRequirements(intake);
+        addRequirements(intakeArm);
     }
 
     @Override
     public void initialize() {
-        intake.enable();
-        intake.setWinchSetpoint(position);
+        intakeArm.enable();
+        intakeArm.setWinchSetpoint(position);
     }
 
     @Override
     public boolean isFinished() {
-        return intake.getController().atSetpoint();
+        return intakeArm.getController().atSetpoint();
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.disable();
+        intakeArm.disable();
         super.end(interrupted);
     }
 }

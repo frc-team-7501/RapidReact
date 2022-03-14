@@ -4,14 +4,17 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ControllerMapping;
-import frc.robot.commands.ArmManualCommand;
+import frc.robot.commands.ClimberManualCommand;
 import frc.robot.commands.DriveAutoCommand;
 import frc.robot.commands.DriveManualCommand;
+import frc.robot.commands.IntakeInCommand;
+import frc.robot.commands.IntakeOutCommand;
 import frc.robot.commands.ArmAutoCommand;
-import frc.robot.commands.IntakeRunCommand;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Intake.IntakePosition;
+import frc.robot.subsystems.IntakeArm;
+import frc.robot.subsystems.IntakeArm.IntakeArmPosition;
 import frc.robot.utils.ExtendedXboxController;
 import frc.robot.utils.InputNormalizer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,8 +28,12 @@ public class RobotContainer {
   private final Joystick driveJoystick = new Joystick(ControllerMapping.JOYSTICK);
   private final ExtendedXboxController controller = new ExtendedXboxController(ControllerMapping.XBOX);
 
+
   private final DriveTrain driveTrain = new DriveTrain();
   private final Intake intake = new Intake();
+  private final IntakeArm intakeArm = new IntakeArm();
+  private final Climber climber = new Climber();
+
 
   private final DriveManualCommand driveManualCommand = new DriveManualCommand(
     driveTrain,
@@ -34,48 +41,54 @@ public class RobotContainer {
     driveJoystick::getTop, driveJoystick::getTrigger
   );
 
+  private final ClimberManualCommand climberManualCommand = new ClimberManualCommand(
+    climber,
+    new InputNormalizer(() -> -controller.getLeftY(), 0.1), // arm
+    new InputNormalizer(() -> -controller.getRightY(), 0.1) // winch
+  );
+
   private final Command autonSimpleRight = new SequentialCommandGroup(
-    new IntakeRunCommand(intake, 1.0).raceWith(new WaitCommand(0.5)),
+    new IntakeOutCommand(intake).raceWith(new WaitCommand(0.5)),
     new ParallelCommandGroup(
       new SequentialCommandGroup(
         new DriveAutoCommand(driveTrain, -4, 0),
         new DriveAutoCommand(driveTrain, 0, -80)
       ),
-      new ArmAutoCommand(intake, IntakePosition.DOWN)
+      new ArmAutoCommand(intakeArm, IntakeArmPosition.DOWN)
     ),
     new DriveAutoCommand(driveTrain, 10, 0)
   );
 
   private final Command autonComplexRight = new SequentialCommandGroup(
-    new InstantCommand(intake::enable, intake),
+    new InstantCommand(intakeArm::enable, intake),
     new ParallelCommandGroup(
-      new ArmAutoCommand(intake, IntakePosition.DOWN),
+      new ArmAutoCommand(intakeArm, IntakeArmPosition.DOWN),
       new DriveAutoCommand(driveTrain, 0, 40) // positive = clockwise
     ),
     new ParallelRaceGroup(
-      new IntakeRunCommand(intake, -0.5),
+      new IntakeInCommand(intake),
       new DriveAutoCommand(driveTrain, 4, -5)
     ),
     new ParallelCommandGroup(
-      new ArmAutoCommand(intake, IntakePosition.UP),
+      new ArmAutoCommand(intakeArm, IntakeArmPosition.UP),
       new DriveAutoCommand(driveTrain, 0, 140)
     ),
     new DriveAutoCommand(driveTrain, 6, 0),
-    new IntakeRunCommand(intake, 1.0).raceWith(new WaitCommand(0.5)),
+    new IntakeOutCommand(intake).raceWith(new WaitCommand(0.5)),
     new ParallelCommandGroup(
       new SequentialCommandGroup(
         new DriveAutoCommand(driveTrain, -4, 0),
         new DriveAutoCommand(driveTrain, 0, -80)
       ),
-      new ArmAutoCommand(intake, IntakePosition.DOWN)
+      new ArmAutoCommand(intakeArm, IntakeArmPosition.DOWN)
     ),
     new DriveAutoCommand(driveTrain, 10, 0)
   );
 
   private final SendableChooser<Command> autonChooser = new SendableChooser<>();
 
-  private final InputNormalizer controllerLeftY = new InputNormalizer(controller::getLeftY, 0.02, -0.5, 0.5);
-  private final ArmManualCommand debugIntakeArmCommand = new ArmManualCommand(intake, controllerLeftY);
+  // private final InputNormalizer controllerLeftY = new InputNormalizer(controller::getLeftY, 0.02, -0.5, 0.5);
+  // private final ArmManualCommand debugIntakeArmCommand = new ArmManualCommand(intakeArm, controllerLeftY);
   
   public RobotContainer() {
     autonChooser.addOption("autonSimpleRight", autonSimpleRight);
@@ -85,9 +98,10 @@ public class RobotContainer {
     configureButtonBindings();
 
     driveTrain.setDefaultCommand(driveManualCommand);
-    intake.setDefaultCommand(debugIntakeArmCommand);
+    // intake.setDefaultCommand(debugIntakeArmCommand);
+    climber.setDefaultCommand(climberManualCommand);
   
-    intake.setWinchEncoderZero();
+    intakeArm.zeroEncoder(); // TODO: ?
   }
 
   public void teleopInit() {
@@ -96,19 +110,19 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     controller.b_LeftBumper()
-      .whileActiveOnce(new IntakeRunCommand(intake, 0.4));
+      .whileActiveOnce(new IntakeInCommand(intake));
     controller.b_RightBumper()
-      .whileActiveOnce(new IntakeRunCommand(intake, -0.5));
+      .whileActiveOnce(new IntakeOutCommand(intake));
     controller.b_A()
-      .whenPressed(new InstantCommand(intake::enable, intake));
+      .whenPressed(new InstantCommand(intakeArm::enable, intake));
     controller.b_B()
-      .whenPressed(new InstantCommand(intake::disable, intake));
+      .whenPressed(new InstantCommand(intakeArm::disable, intake));
     controller.b_X()
-      .whenPressed(new ArmAutoCommand(intake, IntakePosition.DOWN));
+      .whenPressed(new ArmAutoCommand(intakeArm, IntakeArmPosition.DOWN));
     controller.b_Y()
-      .whenPressed(new ArmAutoCommand(intake, IntakePosition.UP));
+      .whenPressed(new ArmAutoCommand(intakeArm, IntakeArmPosition.UP));
     controller.b_Start()
-      .whenPressed(new InstantCommand(intake::setWinchEncoderZero));
+      .whenPressed(new InstantCommand(intakeArm::zeroEncoder, intakeArm));
     controller.b_Back()
       .whenPressed(autonComplexRight);
   }

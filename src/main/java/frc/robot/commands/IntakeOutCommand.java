@@ -3,13 +3,11 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Intake;
 
-public class IntakeRunCommand extends CommandBase {
+public class IntakeOutCommand extends CommandBase {
   private final Intake intake;
-  private final double speed;
   
-  public IntakeRunCommand(final Intake intake, final double speed) {
+  public IntakeOutCommand(final Intake intake) {
     this.intake = intake;
-    this.speed = speed;
     addRequirements(intake);
   }
 
@@ -18,12 +16,12 @@ public class IntakeRunCommand extends CommandBase {
 
   @Override
   public void execute() {
-    intake.runIntake(speed);
+    intake.out();
   }
 
   @Override
   public void end(boolean interrupted) {
-    intake.runIntake(0.0);
+    intake.stop();
   }
 
   @Override

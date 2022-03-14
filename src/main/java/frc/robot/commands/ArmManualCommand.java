@@ -3,15 +3,15 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeArm;
 
 public class ArmManualCommand extends CommandBase {
-  private final Intake intake;
+  private final IntakeArm intakeArm;
   private final DoubleSupplier input;
 
-  public ArmManualCommand(final Intake intake, final DoubleSupplier input) {
-    addRequirements(intake);
-    this.intake = intake;
+  public ArmManualCommand(final IntakeArm intakeArm, final DoubleSupplier input) {
+    addRequirements(intakeArm);
+    this.intakeArm = intakeArm;
     this.input = input;
   }
 
@@ -20,12 +20,12 @@ public class ArmManualCommand extends CommandBase {
 
   @Override
   public void execute() {
-    intake.runWinch(input.getAsDouble());
+    intakeArm.runMotor(input.getAsDouble());
   }
 
   @Override
   public void end(boolean interrupted) {
-    intake.runWinch(0.0);
+    intakeArm.runMotor(0.0);
   }
 
   @Override
