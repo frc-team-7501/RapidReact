@@ -1,8 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ControllerMapping;
@@ -14,6 +12,7 @@ import frc.robot.commands.IntakeRunCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Intake.IntakePosition;
+import frc.robot.utils.ExtendedXboxController;
 import frc.robot.utils.InputNormalizer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -21,11 +20,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class RobotContainer {
   private final Joystick driveJoystick = new Joystick(ControllerMapping.JOYSTICK);
-  private final XboxController controller = new XboxController(ControllerMapping.XBOX);
+  private final ExtendedXboxController controller = new ExtendedXboxController(ControllerMapping.XBOX);
 
   private final DriveTrain driveTrain = new DriveTrain();
   private final Intake intake = new Intake();
@@ -78,16 +76,6 @@ public class RobotContainer {
 
   private final InputNormalizer controllerLeftY = new InputNormalizer(controller::getLeftY, 0.02, -0.5, 0.5);
   private final ArmManualCommand debugIntakeArmCommand = new ArmManualCommand(intake, controllerLeftY);
-
-  private final JoystickButton controllerButtonLB = new JoystickButton(controller, Button.kLeftBumper.value);
-  private final JoystickButton controllerButtonRB = new JoystickButton(controller, Button.kRightBumper.value);
-
-  private final JoystickButton controllerButtonA = new JoystickButton(controller, Button.kA.value);
-  private final JoystickButton controllerButtonB = new JoystickButton(controller, Button.kB.value);
-  private final JoystickButton controllerButtonX = new JoystickButton(controller, Button.kX.value);
-  private final JoystickButton controllerButtonY = new JoystickButton(controller, Button.kY.value);
-  private final JoystickButton controllerButtonStart = new JoystickButton(controller, Button.kStart.value);
-  private final JoystickButton controllerButtonBack = new JoystickButton(controller, Button.kBack.value);
   
   public RobotContainer() {
     autonChooser.addOption("autonSimpleRight", autonSimpleRight);
@@ -107,29 +95,22 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    controllerButtonLB // fire
+    controller.b_LeftBumper()
       .whileActiveOnce(new IntakeRunCommand(intake, 0.4));
-    controllerButtonRB // intake
+    controller.b_RightBumper()
       .whileActiveOnce(new IntakeRunCommand(intake, -0.5));
-    controllerButtonA.whenPressed(
-      new InstantCommand(intake::enable, intake)
-    );
-    controllerButtonB.whenPressed(
-      new InstantCommand(intake::disable, intake)
-    );
-    controllerButtonX.whenPressed(
-      new ArmAutoCommand(intake, IntakePosition.DOWN)
-    );
-    controllerButtonY.whenPressed(
-      new ArmAutoCommand(intake, IntakePosition.UP)
-    );
-    controllerButtonStart.whenPressed(
-      new InstantCommand(intake::setWinchEncoderZero)
-    );
-    controllerButtonBack.whenPressed(
-      autonComplexRight
-    );
-
+    controller.b_A()
+      .whenPressed(new InstantCommand(intake::enable, intake));
+    controller.b_B()
+      .whenPressed(new InstantCommand(intake::disable, intake));
+    controller.b_X()
+      .whenPressed(new ArmAutoCommand(intake, IntakePosition.DOWN));
+    controller.b_Y()
+      .whenPressed(new ArmAutoCommand(intake, IntakePosition.UP));
+    controller.b_Start()
+      .whenPressed(new InstantCommand(intake::setWinchEncoderZero));
+    controller.b_Back()
+      .whenPressed(autonComplexRight);
   }
 
   public Command getAutonomousCommand() {
