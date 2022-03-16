@@ -44,7 +44,7 @@ public class RobotContainer {
 
   private final ClimberManualCommand climberManualCommand = new ClimberManualCommand(
     climber,
-    new InputNormalizer(() -> -controller.getLeftY(), 0.1, -1.0, 1.0), // arm
+    new InputNormalizer(() -> -controller.getLeftY(), 0.1, -0.6, 0.6), // arm
     new InputNormalizer(() -> -controller.getRightY(), 0.1, -1.0, 1.0) // winch
   );
 
@@ -90,7 +90,7 @@ public class RobotContainer {
 
   private final InputNormalizer intakeArmInput = new InputNormalizer(
     () -> controller.getLeftTriggerAxis() - controller.getRightTriggerAxis(), 0.02, -0.5, 0.5);
-  private final ArmManualCommand debugIntakeArmCommand = new ArmManualCommand(intakeArm, intakeArmInput);
+  private final ArmManualCommand intakeArmManualCommand = new ArmManualCommand(intakeArm, intakeArmInput);
   
   public RobotContainer() {
     autonChooser.addOption("autonSimpleRight", autonSimpleRight);
@@ -100,7 +100,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     driveTrain.setDefaultCommand(driveManualCommand);
-    intakeArm.setDefaultCommand(debugIntakeArmCommand);
+    intakeArm.setDefaultCommand(intakeArmManualCommand);
     climber.setDefaultCommand(climberManualCommand);
   
     intakeArm.zeroEncoder(); // TODO: ?
