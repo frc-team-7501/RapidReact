@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,6 +16,12 @@ public class Climber extends SubsystemBase {
   private final CANSparkMax winchR = new CANSparkMax(CANMapping.SPARKMAX_CLIMBER_WINCH_R, MotorType.kBrushless);
   
   public Climber() {
+    armL.setIdleMode(IdleMode.kBrake);
+    armR.setIdleMode(IdleMode.kBrake);
+    winchL.setIdleMode(IdleMode.kBrake);
+    winchR.setIdleMode(IdleMode.kBrake);
+    // winchL.getEncoder().setPositionConversionFactor(1.0);
+    // winchR.getEncoder().setPositionConversionFactor(1.0);
   }
 
   public double getArmLPosition() {
@@ -42,10 +49,14 @@ public class Climber extends SubsystemBase {
   }
 
   public void setWinchL(double speed) {
+    // if (getWinchLPosition() >= 360.0 && speed > 0.0)
+    //   speed = 0.0;
     winchL.set(speed);
   }
 
   public void setWinchR(double speed) {
+    // if (getWinchRPosition() <= -360.0 && speed < 0.0)
+    //   speed = 0.0;
     winchR.set(speed);
   }
 

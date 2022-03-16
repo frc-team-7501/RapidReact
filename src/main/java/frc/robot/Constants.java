@@ -16,10 +16,10 @@ public final class Constants {
         public static final int SPARKMAX_INTAKE_RUN = 46;
 
         // Climber
-        public static final int SPARKMAX_CLIMBER_ARM_L = 0; // TODO
-        public static final int SPARKMAX_CLIMBER_ARM_R = 0;
-        public static final int SPARKMAX_CLIMBER_WINCH_L = 0;
-        public static final int SPARKMAX_CLIMBER_WINCH_R = 0;
+        public static final int SPARKMAX_CLIMBER_ARM_L = 42;
+        public static final int SPARKMAX_CLIMBER_ARM_R = 45;
+        public static final int SPARKMAX_CLIMBER_WINCH_L = 43;
+        public static final int SPARKMAX_CLIMBER_WINCH_R = 41;
     }
 
     public static final class DIOMapping {
@@ -35,6 +35,6 @@ public final class Constants {
     public static final class Tunable {
         // Intake
         public static final double INTAKE_RUN_IN    = -0.4;
-        public static final double INTAKE_RUN_OUT   = 1.0;
+        public static final double INTAKE_RUN_OUT   = 0.9;
     }
 }

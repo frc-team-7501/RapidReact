@@ -10,9 +10,9 @@ public class ArmManualCommand extends CommandBase {
   private final DoubleSupplier input;
 
   public ArmManualCommand(final IntakeArm intakeArm, final DoubleSupplier input) {
-    addRequirements(intakeArm);
     this.intakeArm = intakeArm;
     this.input = input;
+    addRequirements(intakeArm);
   }
 
   @Override
