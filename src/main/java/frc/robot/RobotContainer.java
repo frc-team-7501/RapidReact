@@ -60,6 +60,14 @@ public class RobotContainer {
     new DriveAutoCommand(driveTrain, 10, 0)
   );
 
+  private final Command autonSimpleLeft = new SequentialCommandGroup(
+    new IntakeOutCommand(intake).raceWith(new WaitCommand(0.5)),
+    new ParallelCommandGroup(
+      new IntakeArmAutoCommand(intakeArm, IntakeArmPosition.DOWN),
+      new DriveAutoCommand(driveTrain, -10, 0)
+    )
+  );
+
   private final Command autonComplexRight = new SequentialCommandGroup(
     // new InstantCommand(intakeArm::enable, intake),
     new ParallelCommandGroup(
@@ -94,6 +102,7 @@ public class RobotContainer {
   
   public RobotContainer() {
     autonChooser.addOption("autonSimpleRight", autonSimpleRight);
+    autonChooser.addOption("autonSimpleLeft", autonSimpleLeft);
     autonChooser.addOption("autonComplexRight", autonComplexRight);
     SmartDashboard.putData("auton", autonChooser);
 

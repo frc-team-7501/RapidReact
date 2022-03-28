@@ -35,6 +35,6 @@ public final class Constants {
     public static final class Tunable {
         // Intake
         public static final double INTAKE_RUN_IN    = -0.4;
-        public static final double INTAKE_RUN_OUT   = 0.9;
+        public static final double INTAKE_RUN_OUT   = 1.00;
     }
 }
