@@ -23,8 +23,13 @@ public final class Constants {
     }
 
     public static final class DIOMapping {
+        // DriveTrain
         public static final int ENCODER_DRIVE_L[] = { 0, 1 };
         public static final int ENCODER_DRIVE_R[] = { 2, 3 };
+
+        // Climber
+        public static final int LIMIT_SWITCH_L = 4;
+        public static final int LIMIT_SWITCH_R = 5;
     }
 
     public static final class ControllerMapping {

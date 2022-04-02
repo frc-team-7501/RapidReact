@@ -4,9 +4,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANMapping;
+import frc.robot.Constants.DIOMapping;
 
 public class Climber extends SubsystemBase {
   private final CANSparkMax armL = new CANSparkMax(CANMapping.SPARKMAX_CLIMBER_ARM_L, MotorType.kBrushless);
@@ -14,6 +16,9 @@ public class Climber extends SubsystemBase {
   
   private final CANSparkMax winchL = new CANSparkMax(CANMapping.SPARKMAX_CLIMBER_WINCH_L, MotorType.kBrushless);
   private final CANSparkMax winchR = new CANSparkMax(CANMapping.SPARKMAX_CLIMBER_WINCH_R, MotorType.kBrushless);
+
+  private final DigitalInput switchL = new DigitalInput(DIOMapping.LIMIT_SWITCH_L);
+  private final DigitalInput switchR = new DigitalInput(DIOMapping.LIMIT_SWITCH_R);
   
   public Climber() {
     armL.setIdleMode(IdleMode.kBrake);
@@ -49,14 +54,14 @@ public class Climber extends SubsystemBase {
   }
 
   public void setWinchL(double speed) {
-    // if (getWinchLPosition() >= 360.0 && speed > 0.0)
-    //   speed = 0.0;
+    if (switchL.get() && speed > 0.0)
+      speed = 0.0;
     winchL.set(speed);
   }
 
   public void setWinchR(double speed) {
-    // if (getWinchRPosition() <= -360.0 && speed < 0.0)
-    //   speed = 0.0;
+    if (switchR.get() && speed < 0.0)
+      speed = 0.0;
     winchR.set(speed);
   }
 
@@ -66,5 +71,7 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putNumber("armR", getArmRPosition());
     SmartDashboard.putNumber("winchL", getWinchLPosition());
     SmartDashboard.putNumber("winchR", getWinchRPosition());
+    SmartDashboard.putBoolean("switchL", switchL.get());
+    SmartDashboard.putBoolean("switchR", switchR.get());
   }
 }
