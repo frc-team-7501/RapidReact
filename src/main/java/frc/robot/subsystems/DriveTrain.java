@@ -18,8 +18,14 @@ public class DriveTrain extends SubsystemBase {
 
   private final DifferentialDrive differentialDrive = new DifferentialDrive(groupL, groupR);
 
-  /** Creates a new DriveTrain. */
-  public DriveTrain() {
+  private static DriveTrain instance;
+  public static DriveTrain getInstance() {
+    if (instance == null)
+      instance = new DriveTrain();
+    return instance;
+  }
+
+  private DriveTrain() {
     // motorBL.setNeutralMode(NeutralMode.Brake);
     // motorBR.setNeutralMode(NeutralMode.Brake);
     // motorFL.setNeutralMode(NeutralMode.Brake);
