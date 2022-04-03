@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ControllerMapping;
 import frc.robot.commands.DriveManualCommand;
 import frc.robot.commands.IndexerFeedForwardContinuousCommand;
-import frc.robot.commands.IndexerFeedReverseContinuousCommand;
+import frc.robot.commands.IndexerFullReverseContinuousCommand;
 import frc.robot.commands.IntakeRunInCommand;
 import frc.robot.commands.IntakeRunOutCommand;
 import frc.robot.subsystems.DriveTrain;
@@ -33,23 +33,54 @@ public class RobotContainer {
   private final DriveManualCommand driveManualCommand = new DriveManualCommand(
       driveTrain,
       () -> -stick.getY(), () -> -stick.getX(),
-      stick::getTop, stick::getTrigger);
+      stick::getTop, () -> true); // TODO: use throttle
 
   private final SequentialCommandGroup shootCommand = new SequentialCommandGroup(
     // spin up launcher for 0.5s
     // run indexer feed & kick for 1s (TODO: until limit switches low)
     // stop indexer and launcher
-    new ParallelDeadlineGroup(new WaitCommand(0.5), new InstantCommand(launcher::runShooterShort, launcher)),
-    new ParallelDeadlineGroup(new WaitCommand(1.0), new InstantCommand(indexer::runBoth, indexer)),
+    new ParallelDeadlineGroup(
+      new WaitCommand(1.0),
+      new InstantCommand(launcher::runShooterShort, launcher),
+      // new InstantCommand(launcher::runShooterLow, launcher),
+      new InstantCommand(indexer::runKickReverse, indexer)
+    ),
+    new ParallelDeadlineGroup(
+      new WaitCommand(1.5),
+      new InstantCommand(indexer::runBothForward, indexer)
+    ),
     new ParallelCommandGroup(
       new InstantCommand(launcher::stopShooter, launcher),
       new InstantCommand(indexer::stopBoth, indexer)
     )
   );
 
+  private final SequentialCommandGroup autonA = new SequentialCommandGroup(
+    new SequentialCommandGroup(
+      // spin up launcher for 0.5s
+      // run indexer feed & kick for 1s (TODO: until limit switches low)
+      // stop indexer and launcher
+      new ParallelDeadlineGroup(
+        new WaitCommand(1.0),
+        new InstantCommand(launcher::runShooterShort, launcher),
+        // new InstantCommand(launcher::runShooterLow, launcher),
+        new InstantCommand(indexer::runKickReverse, indexer)
+      ),
+      new ParallelDeadlineGroup(
+        new WaitCommand(1.5),
+        new InstantCommand(indexer::runBothForward, indexer)
+      ),
+      new ParallelCommandGroup(
+        new InstantCommand(launcher::stopShooter, launcher),
+        new InstantCommand(indexer::stopBoth, indexer)
+      )
+    )
+  );
+
   private final SendableChooser<Command> autonChooser = new SendableChooser<>();
 
   public RobotContainer() {
+    autonChooser.addOption("A", autonA);
     SmartDashboard.putData("auton", autonChooser);
 
     configureButtonBindings();
@@ -79,7 +110,7 @@ public class RobotContainer {
           new InstantCommand(intake::pivotOut, intake),
           new ParallelCommandGroup(
             new IntakeRunOutCommand(intake),
-            new IndexerFeedReverseContinuousCommand(indexer)
+            new IndexerFullReverseContinuousCommand(indexer)
           )
         )
       );

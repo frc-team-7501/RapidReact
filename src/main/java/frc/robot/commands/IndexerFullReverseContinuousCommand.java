@@ -3,10 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
 
-public class IndexerFeedReverseContinuousCommand extends CommandBase {
+public class IndexerFullReverseContinuousCommand extends CommandBase {
   private final Indexer indexer;
   
-  public IndexerFeedReverseContinuousCommand(final Indexer indexer) {
+  public IndexerFullReverseContinuousCommand(final Indexer indexer) {
     this.indexer = indexer;
     addRequirements(indexer);
   }
@@ -16,12 +16,12 @@ public class IndexerFeedReverseContinuousCommand extends CommandBase {
 
   @Override
   public void execute() {
-    indexer.runFeedReverse();
+    indexer.runBothReverse();
   }
 
   @Override
   public void end(boolean interrupted) {
-    indexer.stopFeed();
+    indexer.stopBoth();
   }
 
   @Override

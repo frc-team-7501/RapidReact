@@ -41,17 +41,26 @@ public class Indexer extends SubsystemBase {
     feedMotor.set(0);
   }
 
-  public void runKick() {
+  public void runKickForward() {
     kickMotor.set(0.5);
+  }
+
+  public void runKickReverse() {
+    kickMotor.set(-0.5);
   }
 
   public void stopKick() {
     kickMotor.set(0);
   }
 
-  public void runBoth() {
+  public void runBothForward() {
     runFeedForward();
-    runKick();
+    runKickForward();
+  }
+
+  public void runBothReverse() {
+    runFeedReverse();
+    runKickReverse();
   }
 
   public void stopBoth() {

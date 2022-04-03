@@ -59,11 +59,11 @@ public class Intake extends SubsystemBase {
 
   public void runIn() {
     // intakeL.set(TalonFXControlMode.Velocity, 1000);
-    intakeL.set(TalonFXControlMode.PercentOutput, 0.5);
+    intakeL.set(TalonFXControlMode.PercentOutput, 0.75);
   }
 
   public void runOut() {
-    intakeL.set(TalonFXControlMode.PercentOutput, -0.5);
+    intakeL.set(TalonFXControlMode.PercentOutput, -0.75);
   }
 
   public void stop() {
