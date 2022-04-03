@@ -36,13 +36,9 @@ public class RobotContainer {
       stick::getTop, () -> true); // TODO: use throttle
 
   private final SequentialCommandGroup shootCommand = new SequentialCommandGroup(
-    // spin up launcher for 0.5s
-    // run indexer feed & kick for 1s (TODO: until limit switches low)
-    // stop indexer and launcher
     new ParallelDeadlineGroup(
       new WaitCommand(1.0),
       new InstantCommand(launcher::runShooterShort, launcher),
-      // new InstantCommand(launcher::runShooterLow, launcher),
       new InstantCommand(indexer::runKickReverse, indexer)
     ),
     new ParallelDeadlineGroup(
@@ -57,13 +53,9 @@ public class RobotContainer {
 
   private final SequentialCommandGroup autonA = new SequentialCommandGroup(
     new SequentialCommandGroup(
-      // spin up launcher for 0.5s
-      // run indexer feed & kick for 1s (TODO: until limit switches low)
-      // stop indexer and launcher
       new ParallelDeadlineGroup(
         new WaitCommand(1.0),
         new InstantCommand(launcher::runShooterShort, launcher),
-        // new InstantCommand(launcher::runShooterLow, launcher),
         new InstantCommand(indexer::runKickReverse, indexer)
       ),
       new ParallelDeadlineGroup(
