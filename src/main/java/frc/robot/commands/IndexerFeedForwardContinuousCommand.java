@@ -5,9 +5,11 @@ import frc.robot.subsystems.Indexer;
 
 public class IndexerFeedForwardContinuousCommand extends CommandBase {
   private final Indexer indexer;
+  private final boolean runKick;
   
-  public IndexerFeedForwardContinuousCommand(final Indexer indexer) {
+  public IndexerFeedForwardContinuousCommand(final Indexer indexer, final boolean runKick) {
     this.indexer = indexer;
+    this.runKick = runKick;
     addRequirements(indexer);
   }
 
@@ -16,12 +18,15 @@ public class IndexerFeedForwardContinuousCommand extends CommandBase {
 
   @Override
   public void execute() {
-    indexer.runFeedForward();
+    if (runKick)
+      indexer.runBothForward();
+    else
+      indexer.runFeedForward();
   }
 
   @Override
   public void end(boolean interrupted) {
-    indexer.stopFeed();
+    indexer.stopBoth();
   }
 
   @Override

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -26,20 +27,21 @@ public class DriveTrain extends SubsystemBase {
   }
 
   private DriveTrain() {
-    // motorBL.setNeutralMode(NeutralMode.Brake);
-    // motorBR.setNeutralMode(NeutralMode.Brake);
-    // motorFL.setNeutralMode(NeutralMode.Brake);
-    // motorFR.setNeutralMode(NeutralMode.Brake);
-    
     groupL.setInverted(true);
   }
 
   public void drive(double forwards, double rotate, boolean quickTurn) {
-    differentialDrive.curvatureDrive(-forwards, rotate, quickTurn);
+    differentialDrive.curvatureDrive(forwards, rotate, quickTurn);
+  }
+
+  public void setBrakeMode(boolean enabled) {
+    motorBL.setNeutralMode(enabled ? NeutralMode.Brake : NeutralMode.Coast);
+    motorBR.setNeutralMode(enabled ? NeutralMode.Brake : NeutralMode.Coast);
+    motorFL.setNeutralMode(enabled ? NeutralMode.Brake : NeutralMode.Coast);
+    motorFR.setNeutralMode(enabled ? NeutralMode.Brake : NeutralMode.Coast);
   }
 
   public void stop() {
-    // differentialDrive.stopMotor();
     drive(0, 0, false);
   }
 }

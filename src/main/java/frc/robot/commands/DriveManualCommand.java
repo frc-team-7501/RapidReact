@@ -12,20 +12,17 @@ public class DriveManualCommand extends CommandBase {
   private final DoubleSupplier forwardSupplier;
   private final DoubleSupplier rotateSupplier;
   private final BooleanSupplier quickTurnSupplier;
-  private final BooleanSupplier turboSupplier;
   
   public DriveManualCommand(
       final DriveTrain driveTrain,
       DoubleSupplier forwardSupplier,
       DoubleSupplier rotateSupplier,
-      BooleanSupplier quickTurnSupplier,
-      BooleanSupplier turboSupplier) {
+      BooleanSupplier quickTurnSupplier) {
     addRequirements(driveTrain);
     this.driveTrain = driveTrain;
     this.forwardSupplier = forwardSupplier;
     this.rotateSupplier = rotateSupplier;
     this.quickTurnSupplier = quickTurnSupplier;
-    this.turboSupplier = turboSupplier;
   }
 
   @Override
@@ -36,7 +33,7 @@ public class DriveManualCommand extends CommandBase {
   @Override
   public void execute() {
     driveTrain.drive(
-      forwardSupplier.getAsDouble() * (turboSupplier.getAsBoolean() ? 1.0 : 0.75),
+      forwardSupplier.getAsDouble(),
       rotateSupplier.getAsDouble(),
       quickTurnSupplier.getAsBoolean()
     );

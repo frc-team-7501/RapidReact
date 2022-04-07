@@ -13,12 +13,12 @@ public class IntakeRunInCommand extends CommandBase {
 
   @Override
   public void execute() {
-    intake.runIn();
+    intake.intake();
   }
 
   @Override
   public void end(boolean interrupted) {
-    intake.stop();
+    intake.stopIntake();
   }
 
   @Override

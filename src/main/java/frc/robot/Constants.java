@@ -2,6 +2,9 @@ package frc.robot;
 
 public final class Constants {
     public static final class CANMapping {
+        // Climber
+        public static final int SPARKMAX_CLIMBER_EXTEND = 42;
+
         // DriveTrain
         public static final int VICTORSPX_DRIVE_BL = 1;
         public static final int VICTORSPX_DRIVE_BR = 2;
@@ -11,6 +14,9 @@ public final class Constants {
         // Intake
         public static final int TALONFX_INTAKE_L = 11;
         public static final int TALONFX_INTAKE_R = 12;
+        public static final int TALONSRX_INTAKE_AGITATOR = 31;
+        public static final int TALONSRX_INTAKE_PIVOT_L = 33;
+        public static final int TALONSRX_INTAKE_PIVOT_R = 32;
 
         // Indexer
         public static final int SPARKMAX_INDEXER_FEED = 22;
@@ -21,14 +27,19 @@ public final class Constants {
         public static final int TALONFX_LAUNCHER_SHOOTER_B = 14;
     }
 
-    public static final class PWMMapping {
+    public static final class DIOMapping {
         // Intake
-        public static final int SERVO_INTAKE_PIVOT_L = 0;
-        public static final int SERVO_INTAKE_PIVOT_R = 1;
+        public static final int[] ENCODER_INTAKE_PIVOT_L = { 0, 1 };
+        public static final int[] ENCODER_INTAKE_PIVOT_R = { 2, 3 };
     }
 
     public static final class ControllerMapping {
         public static final int JOYSTICK = 0;
         public static final int XBOX = 1;
+    }
+
+    public static final class Setpoints {
+        // Launcher
+        public static final double LAUNCHER_SHOOT_CLOSE_RPM = 2200;
     }
 }

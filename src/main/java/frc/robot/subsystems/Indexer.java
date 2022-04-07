@@ -24,11 +24,6 @@ public class Indexer extends SubsystemBase {
     kickMotor.setInverted(true);
   }
 
-  @Override
-  public void periodic() {
-    // SmartDashboard...
-  }
-
   public void runFeedForward() {
     feedMotor.set(0.5);
   }
