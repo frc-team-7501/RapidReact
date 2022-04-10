@@ -125,11 +125,11 @@ public class Intake extends SubsystemBase {
 
   public void intake() {
     intakeMotorL.set(TalonFXControlMode.PercentOutput, 0.4);
-    agitatorMotor.set(TalonSRXControlMode.PercentOutput, -1);
+    agitatorMotor.set(TalonSRXControlMode.PercentOutput, 1);
   }
 
   public void eject() {
-    intakeMotorL.set(TalonFXControlMode.PercentOutput, -0.6);
+    intakeMotorL.set(TalonFXControlMode.PercentOutput, -0.4);
     agitatorMotor.set(TalonSRXControlMode.PercentOutput, -1);
   }
 

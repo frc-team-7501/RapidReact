@@ -7,11 +7,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ControllerMapping;
 import frc.robot.Constants.Setpoints;
 import frc.robot.commands.ClimberManualCommand;
+import frc.robot.commands.DriveConstantCommand;
 import frc.robot.commands.DriveManualCommand;
 import frc.robot.commands.IndexerFeedForwardContinuousCommand;
 import frc.robot.commands.IndexerFullReverseContinuousCommand;
@@ -39,19 +42,29 @@ public class RobotContainer {
   private final Indexer indexer = Indexer.getInstance();
   private final Launcher launcher = Launcher.getInstance();
 
-  private final DriveManualCommand driveManualCommand = new DriveManualCommand(
+  private final Command driveManualCommand = new DriveManualCommand(
     driveTrain,
     () -> stick.getY() * (stick.getThrottle() * 0.5 + 0.5), () -> -stick.getX(),
     () -> stick.getTop()
   );
 
-  private final ClimberManualCommand climberManualCommand = new ClimberManualCommand(climber, () -> InputNormalizer.calculate(controller.getLeftY(), 0.05, -1, 1));
+  private final Command climberManualCommand = new ClimberManualCommand(climber, () -> InputNormalizer.calculate(controller.getLeftY(), 0.05, -1, 1));
 
-  private final SequentialCommandGroup autonA = new SequentialCommandGroup(
-    new WaitCommand(1.0),
-    new WaitCommand(1.0).deadlineWith(new IndexerFeedForwardContinuousCommand(indexer, true))
-    // TODO: drive backwards
+  private final Command autonA = new SequentialCommandGroup(
+    new WaitUntilCommand(launcher::atVelocity),
+    new WaitCommand(1.0), // wait for flywheel to spin up
+    new ParallelRaceGroup(
+      new WaitCommand(1.0),
+      new IndexerFeedForwardContinuousCommand(indexer, true)
+    ),
+    new ParallelRaceGroup(
+      new WaitCommand(2.0),
+      new DriveConstantCommand(driveTrain, -0.5, 0, false)
+    )
   );
+
+  private final Command shooterRunCommand = new LauncherVelocityContinuousCommand(launcher, Setpoints.LAUNCHER_SHOOT_CLOSE_RPM);
+  private final Command shooterStopCommand = new LauncherVelocityContinuousCommand(launcher, 0);
 
   private final SendableChooser<Command> autonChooser = new SendableChooser<>();
 
@@ -62,7 +75,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     driveTrain.setDefaultCommand(driveManualCommand);
-    launcher.setDefaultCommand(new LauncherVelocityContinuousCommand(launcher, Setpoints.LAUNCHER_SHOOT_CLOSE_RPM));
+    launcher.setDefaultCommand(shooterRunCommand);
     climber.setDefaultCommand(climberManualCommand);
 
     ShuffleboardTab subsysTab = Shuffleboard.getTab("Subsystems");
@@ -109,6 +122,9 @@ public class RobotContainer {
       .whenPressed(new IntakePositionCommand(intake, IntakePosition.OUT));
     controller.b_B()
       .whenPressed(new IntakePositionCommand(intake, IntakePosition.IN));
+
+    controller.b_Y()
+      .toggleWhenActive(shooterStopCommand);
 
     controller.b_Start()
       .whenPressed(new InstantCommand(launcher::play, launcher));

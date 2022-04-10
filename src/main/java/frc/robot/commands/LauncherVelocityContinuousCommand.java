@@ -15,7 +15,10 @@ public class LauncherVelocityContinuousCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    launcher.runShooter(rpm);
+    if (rpm == 0)
+      launcher.stopShooter();
+    else
+      launcher.runShooter(rpm);
   }
 
   @Override

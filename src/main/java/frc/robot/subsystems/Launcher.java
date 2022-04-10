@@ -13,6 +13,8 @@ public class Launcher extends SubsystemBase {
   private final WPI_TalonFX shooterF = new WPI_TalonFX(CANMapping.TALONFX_LAUNCHER_SHOOTER_F);
   private final WPI_TalonFX shooterB = new WPI_TalonFX(CANMapping.TALONFX_LAUNCHER_SHOOTER_B);
 
+  private double targetVelocity = 0;
+
   private final Orchestra orchestra = new Orchestra();
   private String song = null;
 
@@ -77,6 +79,7 @@ public class Launcher extends SubsystemBase {
     builder.addDoubleProperty("B velocity", shooterB::getSelectedSensorVelocity, x -> {});
     builder.addDoubleProperty("F amps", shooterF::getStatorCurrent, x -> {});
     builder.addDoubleProperty("B amps", shooterB::getStatorCurrent, x -> {});
+    builder.addBooleanProperty("atVelocity", this::atVelocity, x -> {});
   }
 
   public void runShooter(double rpm) { // TODO: other distances
@@ -85,11 +88,20 @@ public class Launcher extends SubsystemBase {
     // shooterF setpoint must be inverted due to mirroring
     shooterF.set(TalonFXControlMode.Velocity, -v);
     shooterB.set(TalonFXControlMode.Velocity, v);
+    targetVelocity = v;
+  }
+
+  public boolean atVelocity() {
+    double vf = shooterF.getSelectedSensorVelocity();
+    double vb = shooterB.getSelectedSensorVelocity();
+    
+    return Math.abs(vf + targetVelocity) <= 50 && Math.abs(vb - targetVelocity) <= 50;
   }
 
   public void stopShooter() {
     shooterF.set(TalonFXControlMode.PercentOutput, 0);
     shooterB.set(TalonFXControlMode.PercentOutput, 0);
+    targetVelocity = 0;
   }
 
   public String getSong()  {

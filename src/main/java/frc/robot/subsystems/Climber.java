@@ -23,7 +23,7 @@ public class Climber extends SubsystemBase {
     extendMotor.restoreFactoryDefaults();
     extendMotor.setIdleMode(IdleMode.kBrake);
 
-    extendMotor.setSmartCurrentLimit(20); // TODO: tune this if needed
+    extendMotor.setSmartCurrentLimit(30); // TODO: tune this if needed
   }
   
   public void manualControl(double extendPower) {
